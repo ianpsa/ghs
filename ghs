@@ -1,0 +1,129 @@
+#!/bin/zsh
+# ghs - Switch between GitHub and GitLab accounts
+# https://github.com/archvarius/ghs
+
+GH_STATE_FILE="${HOME}/.ghs_state"
+
+get_github_accounts() {
+    local accounts=()
+    if [[ -f "${HOME}/.config/gh/hosts.yml" ]]; then
+        while IFS= read -r line; do
+            accounts+=("$line")
+        done < <(grep -E '^\s+[a-zA-Z0-9_-]+:$' "${HOME}/.config/gh/hosts.yml" | grep -v 'users\|oauth_token\|git_protocol\|user' | sed 's/://' | sed 's/\s//g')
+    fi
+    echo "${accounts[@]}"
+}
+
+get_gitlab_hosts() {
+    local hosts=()
+    if [[ -f "${HOME}/.config/glab-cli/config.yml" ]]; then
+        while IFS= read -r line; do
+            hosts+=("$line")
+        done < <(grep -E '^\s+[a-zA-Z0-9.-]+:$' "${HOME}/.config/glab-cli/config.yml" | grep -v 'gitlab.com\|api\|subfolder\|_protocol\|api_hostssh_host\|token\|proxy\|custom_headers\|container_registry' | sed 's/://' | sed 's/\s//g')
+    fi
+    echo "${hosts[@]}"
+}
+
+list_accounts() {
+    local current
+    current=$(<"$GH_STATE_FILE" 2>/dev/null)
+    
+    echo "Available accounts:"
+    for acc in $(get_github_accounts); do
+        if [[ "$acc" == "$current" ]]; then
+            echo "  * $acc (github)"
+        else
+            echo "    $acc (github)"
+        fi
+    done
+    for host in $(get_gitlab_hosts); do
+        if [[ "$host" == "$current" ]]; then
+            echo "  * $host (gitlab)"
+        else
+            echo "    $host (gitlab)"
+        fi
+    done
+}
+
+is_github_account() {
+    local target="$1"
+    for acc in $(get_github_accounts); do
+        [[ "$acc" == "$target" ]] && return 0
+    done
+    return 1
+}
+
+switch_account() {
+    local target="$1"
+    
+    if is_github_account "$target"; then
+        echo "Switching to GitHub: $target"
+        gh auth switch -u "$target"
+    else
+        echo "Switching to GitLab: $target"
+    fi
+}
+
+flip_flop() {
+    local current
+    current=$(<"$GH_STATE_FILE" 2>/dev/null)
+    
+    local all_accounts=($(get_github_accounts) $(get_gitlab_hosts))
+    local found=0
+    local target=""
+    
+    for acc in "${all_accounts[@]}"; do
+        if [[ $found -eq 1 ]]; then
+            target="$acc"
+            break
+        fi
+        [[ "$acc" == "$current" ]] && found=1
+    done
+    
+    [[ $found -eq 0 || -z "$target" ]] && target="${all_accounts[1]}"
+    echo "$target"
+}
+
+main() {
+    if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        echo "ghs - Switch between GitHub and GitLab accounts"
+        echo ""
+        echo "Usage: ghs [account]"
+        echo "       ghs -l, --list"
+        echo "       ghs -h, --help"
+        echo ""
+        echo "Options:"
+        echo "  -l, --list    List all available accounts"
+        echo "  -h, --help    Show this help message"
+        echo ""
+        echo "Examples:"
+        echo "  ghs              # Switch to next account (flip-flop)"
+        echo "  ghs -l           # List all accounts"
+        echo "  ghs ianpsa       # Switch to GitHub account 'ianpsa'"
+        echo "  ghs git.inteli.edu.br  # Switch to GitLab"
+        return
+    fi
+    
+    if [[ "$1" == "-l" || "$1" == "--list" ]]; then
+        list_accounts
+        return
+    fi
+    
+    local target=""
+    
+    if [[ -n "$1" ]]; then
+        target="$1"
+    else
+        target=$(flip_flop)
+    fi
+    
+    if [[ -z "$target" ]]; then
+        echo "Error: No accounts found"
+        return 1
+    fi
+    
+    echo "$target" > "$GH_STATE_FILE"
+    switch_account "$target"
+}
+
+main "$@"
