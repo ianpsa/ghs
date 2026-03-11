@@ -3,6 +3,37 @@
 # https://github.com/archvarius/ghs
 
 GH_STATE_FILE="${HOME}/.ghs_state"
+GH_EMAIL_MAP_FILE="${HOME}/.ghs_email_map"
+
+get_email_from_map() {
+    local account="$1"
+    if [[ -f "$GH_EMAIL_MAP_FILE" ]]; then
+        grep "^${account}:" "$GH_EMAIL_MAP_FILE" 2>/dev/null | cut -d: -f2-
+    fi
+}
+
+save_email_to_map() {
+    local account="$1"
+    local email="$2"
+    if [[ -n "$email" ]]; then
+        if [[ ! -f "$GH_EMAIL_MAP_FILE" ]]; then
+            touch "$GH_EMAIL_MAP_FILE"
+        fi
+        if ! grep -q "^${account}:" "$GH_EMAIL_MAP_FILE" 2>/dev/null; then
+            echo "${account}:${email}" >> "$GH_EMAIL_MAP_FILE"
+        fi
+    fi
+}
+
+prompt_for_email() {
+    local account="$1"
+    echo -n "Enter email for account '$account': "
+    read email
+    if [[ -n "$email" ]]; then
+        save_email_to_map "$account" "$email"
+    fi
+    echo "$email"
+}
 
 get_github_accounts() {
     local accounts=()
@@ -85,6 +116,17 @@ switch_to_github() {
     if [[ -n "$token" ]]; then
         setup_https_credential "github.com" "$target" "$token"
     fi
+    
+    local email
+    email=$(get_email_from_map "$target")
+    if [[ -z "$email" ]]; then
+        email=$(prompt_for_email "$target")
+    fi
+    if [[ -n "$email" ]]; then
+        git config --global user.email "$email"
+        git config --global user.name "$target"
+        echo "  Git user: $target <$email>"
+    fi
 }
 
 switch_to_gitlab() {
@@ -99,6 +141,17 @@ switch_to_gitlab() {
         local username
         username=$(echo "$target" | sed 's/@.*//')
         setup_https_credential "$target" "$username" "$token"
+        
+        local email
+        email=$(get_email_from_map "$target")
+        if [[ -z "$email" ]]; then
+            email=$(prompt_for_email "$username")
+        fi
+        if [[ -n "$email" ]]; then
+            git config --global user.email "$email"
+            git config --global user.name "$username"
+            echo "  Git user: $username <$email>"
+        fi
     fi
 }
 
