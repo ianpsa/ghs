@@ -8,7 +8,7 @@ GH_EMAIL_MAP_FILE="${HOME}/.ghs_email_map"
 get_email_from_map() {
     local account="$1"
     if [[ -f "$GH_EMAIL_MAP_FILE" ]]; then
-        grep "^${account}:" "$GH_EMAIL_MAP_FILE" 2>/dev/null | cut -d: -f2-
+        grep "^${account}:" "$GH_EMAIL_MAP_FILE" 2>/dev/null | cut -d: -f2- | tr -d '\n\r'
     fi
 }
 
@@ -145,7 +145,7 @@ switch_to_gitlab() {
         local email
         email=$(get_email_from_map "$target")
         if [[ -z "$email" ]]; then
-            email=$(prompt_for_email "$username")
+            email=$(prompt_for_email "$target")
         fi
         if [[ -n "$email" ]]; then
             git config --global user.email "$email"
