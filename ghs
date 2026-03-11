@@ -24,6 +24,13 @@ get_gitlab_hosts() {
     echo "${hosts[@]}"
 }
 
+get_gitlab_token() {
+    local host="$1"
+    if [[ -f "${HOME}/.config/glab-cli/config.yml" ]]; then
+        grep -A1 "${host}:" "${HOME}/.config/glab-cli/config.yml" 2>/dev/null | grep 'token:' | awk '{print $2}'
+    fi
+}
+
 list_accounts() {
     local current
     current=$(<"$GH_STATE_FILE" 2>/dev/null)
@@ -53,14 +60,55 @@ is_github_account() {
     return 1
 }
 
+setup_https_credential() {
+    local host="$1"
+    local username="$2"
+    local token="$3"
+    
+    git config --global credential.helper store
+    git config --global "credential.https://${host}.username" "$username"
+    
+    local cred_url="https://${username}:${token}@${host}"
+    if ! grep -q "$cred_url" "${HOME}/.git-credentials" 2>/dev/null; then
+        echo "$cred_url" >> "${HOME}/.git-credentials"
+    fi
+}
+
+switch_to_github() {
+    local target="$1"
+    echo "Switching to GitHub: $target"
+    gh auth switch -u "$target" 2>/dev/null
+    gh config set git_protocol https --host github.com 2>/dev/null
+    
+    local token
+    token=$(gh auth token 2>/dev/null)
+    if [[ -n "$token" ]]; then
+        setup_https_credential "github.com" "$target" "$token"
+    fi
+}
+
+switch_to_gitlab() {
+    local target="$1"
+    echo "Switching to GitLab: $target"
+    
+    glab config set git_protocol https 2>/dev/null
+    
+    local token
+    token=$(get_gitlab_token "$target")
+    if [[ -n "$token" ]]; then
+        local username
+        username=$(echo "$target" | sed 's/@.*//')
+        setup_https_credential "$target" "$username" "$token"
+    fi
+}
+
 switch_account() {
     local target="$1"
     
     if is_github_account "$target"; then
-        echo "Switching to GitHub: $target"
-        gh auth switch -u "$target"
+        switch_to_github "$target"
     else
-        echo "Switching to GitLab: $target"
+        switch_to_gitlab "$target"
     fi
 }
 
