@@ -1,5 +1,7 @@
 # ghs - Alternador de Contas GitHub/GitLab
 
+> Feito por IA
+
 Uma ferramenta CLI simples para alternar entre contas GitHub e GitLab usando `gh auth switch` para GitHub e gerenciamento de estado para GitLab.
 
 ## Funcionalidades
