@@ -1,29 +1,29 @@
-# ghs - GitHub/GitLab Account Switcher
+# ghs - Alternador de Contas GitHub/GitLab
 
-A simple CLI tool to switch between GitHub and GitLab accounts using `gh auth switch` for GitHub and state management for GitLab.
+Uma ferramenta CLI simples para alternar entre contas GitHub e GitLab usando `gh auth switch` para GitHub e gerenciamento de estado para GitLab.
 
-## Features
+## Funcionalidades
 
-- Flip-flop between all your GitHub and GitLab accounts
-- Auto-discovers accounts from `gh` and `glab` configurations
-- Works with multiple GitHub accounts and multiple GitLab instances
-- Single command to switch: `ghs`
+- Alternar entre todas as suas contas GitHub e GitLab
+- Descobre automaticamente contas das configurações do `gh` e `glab`
+- Funciona com múltiplas contas GitHub e múltiplas instâncias GitLab
+- Comando único para alternar: `ghs`
 
-## Requirements
+## Requisitos
 
-- **zsh** - Shell (tested with zsh)
+- **zsh** - Shell (testado com zsh)
 - **gh** - GitHub CLI (https://github.com/cli/cli)
-- **glab** - GitLab CLI (https://gitlab.com/gitlab-org/cli) - optional, for GitLab support
+- **glab** - GitLab CLI (https://gitlab.com/gitlab-org/cli) - opcional, para suporte ao GitLab
 
-## Installation
+## Instalação
 
-### Quick Install
+### Instalação Rápida
 
 ```bash
 curl -sL https://raw.githubusercontent.com/archvarius/ghs/main/install.sh | zsh
 ```
 
-### Manual Install
+### Instalação Manual
 
 ```bash
 git clone https://github.com/archvarius/ghs.git ~/ghs
@@ -31,58 +31,58 @@ echo 'export PATH="$HOME/ghs:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-## Configuration
+## Configuração
 
 ### GitHub
 
-Make sure you're logged in with multiple accounts:
+Certifique-se de estar logado com múltiplas contas:
 
 ```bash
 gh auth login
 gh auth login --hostname github.com
-gh auth switch -u your-username
+gh auth switch -u seu-usuario
 ```
 
 ### GitLab
 
-Login with glab (optional):
+Logue com glab (opcional):
 
 ```bash
 glab auth login --hostname git.inteli.edu.br
 ```
 
-Or just configure SSH keys for your GitLab instance.
+Ou configure apenas as chaves SSH para sua instância GitLab.
 
-## Usage
+## Uso
 
 ```bash
-# Switch to next account (flip-flop)
+# Alternar para próxima conta (flip-flop)
 ghs
 
-# List all accounts
+# Listar todas as contas
 ghs -l
-# or
+# ou
 ghs --list
 
-# Switch to specific GitHub account
+# Alternar para conta GitHub específica
 ghs ianpsa
 ghs iansimao-rivio
 
-# Switch to GitLab instance
+# Alternar para instância GitLab
 ghs git.inteli.edu.br
 
-# Show help
+# Mostrar ajuda
 ghs -h
 ```
 
-## How It Works
+## Como Funciona
 
-1. Reads GitHub accounts from `~/.config/gh/hosts.yml`
-2. Reads GitLab hosts from `~/.config/glab-cli/config.yml`
-3. Stores current account in `~/.ghs_state`
-4. For GitHub accounts: uses `gh auth switch -u <account>`
-5. For GitLab accounts: just updates the state (SSH keys handle authentication)
+1. Lê contas `~/.config/gh/hosts.yml`
+2. Lê hosts GitLab de `~/.config/glab-cli/config.yml`
+3. Armazena a conta atual em `~/.ghs_state`
+4. Para contas GitHub: usa `gh auth switch -u <conta>`
+5. Para contas GitLab: apenas atualiza o estado (chaves SSH fazem a autenticação)
 
-## License
+## Licença
 
 MIT
