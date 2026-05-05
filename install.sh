@@ -3,7 +3,7 @@
 
 set -e
 
-GH_REPO_URL="https://github.com/archvarius/ghs.git"
+GH_REPO_URL="https://github.com/ianpsa/zsh-gitauth-manager.git"
 INSTALL_DIR="${HOME}/ghs"
 
 echo "Installing ghs..."
