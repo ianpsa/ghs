@@ -48,8 +48,8 @@ save_email_to_map() {
 
 prompt_for_email() {
     local account="$1"
-    echo -n "Enter email for account '$account': "
-    read email
+    echo -n "Enter email for account '$account': " >/dev/tty
+    read email </dev/tty
     if [[ -n "$email" ]]; then
         save_email_to_map "$account" "$email"
     fi
