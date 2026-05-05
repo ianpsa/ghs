@@ -2,6 +2,11 @@
 # ghs - Switch between GitHub and GitLab accounts
 # https://github.com/ianpsa/zsh-gitauth-manager
 
+if [[ "$(uname)" == "Darwin" ]]; then
+    [[ -d "/opt/homebrew/bin" ]] && export PATH="/opt/homebrew/bin:$PATH"
+    [[ -d "/usr/local/bin" ]]   && export PATH="/usr/local/bin:$PATH"
+fi
+
 GH_STATE_FILE="${HOME}/.ghs_state"
 GH_EMAIL_MAP_FILE="${HOME}/.ghs_email_map"
 GH_LOG_FILE="${HOME}/.ghs_log"
@@ -58,7 +63,7 @@ get_gitlab_hosts() {
     if [[ -f "${HOME}/.config/glab-cli/config.yml" ]]; then
         while IFS= read -r line; do
             hosts+=("$line")
-        done < <(grep -E '^[[:space:]]+[a-zA-Z0-9.-]+:$' "${HOME}/.config/glab-cli/config.yml" | grep -v 'gitlab.com\|api\|subfolder\|_protocol\|api_hostssh_host\|token\|proxy\|custom_headers\|container_registry' | sed 's/://' | sed 's/[[:space:]]//g')
+        done < <(grep -E '^[[:space:]]+[a-zA-Z0-9.-]+:$' "${HOME}/.config/glab-cli/config.yml" | grep -vE 'gitlab\.com|api|subfolder|_protocol|token|proxy|custom_headers|container_registry' | sed 's/://' | sed 's/[[:space:]]//g')
     fi
     echo "${hosts[@]}"
 }
