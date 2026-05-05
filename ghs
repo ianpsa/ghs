@@ -4,6 +4,14 @@
 
 GH_STATE_FILE="${HOME}/.ghs_state"
 GH_EMAIL_MAP_FILE="${HOME}/.ghs_email_map"
+GH_LOG_FILE="${HOME}/.ghs_log"
+
+log_event() {
+    local action="$1"
+    local account="$2"
+    local provider="$3"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | ${action} | ${account} (${provider})" >> "$GH_LOG_FILE"
+}
 
 get_email_from_map() {
     local account="$1"
@@ -40,7 +48,7 @@ get_github_accounts() {
     if [[ -f "${HOME}/.config/gh/hosts.yml" ]]; then
         while IFS= read -r line; do
             accounts+=("$line")
-        done < <(grep -E '^\s+[a-zA-Z0-9_-]+:$' "${HOME}/.config/gh/hosts.yml" | grep -v 'users\|oauth_token\|git_protocol\|user' | sed 's/://' | sed 's/\s//g')
+        done < <(grep -E '^[[:space:]]+[a-zA-Z0-9_-]+:$' "${HOME}/.config/gh/hosts.yml" | grep -v 'users\|oauth_token\|git_protocol\|user' | sed 's/://' | sed 's/[[:space:]]//g')
     fi
     echo "${accounts[@]}"
 }
@@ -50,7 +58,7 @@ get_gitlab_hosts() {
     if [[ -f "${HOME}/.config/glab-cli/config.yml" ]]; then
         while IFS= read -r line; do
             hosts+=("$line")
-        done < <(grep -E '^\s+[a-zA-Z0-9.-]+:$' "${HOME}/.config/glab-cli/config.yml" | grep -v 'gitlab.com\|api\|subfolder\|_protocol\|api_hostssh_host\|token\|proxy\|custom_headers\|container_registry' | sed 's/://' | sed 's/\s//g')
+        done < <(grep -E '^[[:space:]]+[a-zA-Z0-9.-]+:$' "${HOME}/.config/glab-cli/config.yml" | grep -v 'gitlab.com\|api\|subfolder\|_protocol\|api_hostssh_host\|token\|proxy\|custom_headers\|container_registry' | sed 's/://' | sed 's/[[:space:]]//g')
     fi
     echo "${hosts[@]}"
 }
@@ -157,11 +165,21 @@ switch_to_gitlab() {
 
 switch_account() {
     local target="$1"
-    
+    local current
+    current=$(<"$GH_STATE_FILE" 2>/dev/null)
+
+    if [[ -n "$current" && "$current" != "$target" ]]; then
+        local current_provider="gitlab"
+        is_github_account "$current" && current_provider="github"
+        log_event "LOGOUT" "$current" "$current_provider"
+    fi
+
     if is_github_account "$target"; then
         switch_to_github "$target"
+        log_event "LOGIN" "$target" "github"
     else
         switch_to_gitlab "$target"
+        log_event "LOGIN" "$target" "gitlab"
     fi
 }
 
@@ -223,8 +241,8 @@ main() {
         return 1
     fi
     
-    echo "$target" > "$GH_STATE_FILE"
     switch_account "$target"
+    echo "$target" > "$GH_STATE_FILE"
 }
 
 main "$@"

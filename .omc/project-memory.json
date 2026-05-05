@@ -34,21 +34,21 @@
   "directoryMap": {},
   "hotPaths": [
     {
+      "path": "ghs",
+      "accessCount": 11,
+      "lastAccessed": 1777985367881,
+      "type": "file"
+    },
+    {
       "path": "install.sh",
-      "accessCount": 2,
-      "lastAccessed": 1777984956718,
+      "accessCount": 4,
+      "lastAccessed": 1777985292886,
       "type": "file"
     },
     {
       "path": "README.md",
       "accessCount": 2,
       "lastAccessed": 1777985013466,
-      "type": "file"
-    },
-    {
-      "path": "ghs",
-      "accessCount": 2,
-      "lastAccessed": 1777985025786,
       "type": "file"
     }
   ],
