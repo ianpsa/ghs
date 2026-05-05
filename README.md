@@ -22,13 +22,13 @@ Uma ferramenta CLI simples para alternar entre contas GitHub e GitLab usando `gh
 ### Instalação Rápida
 
 ```bash
-curl -sL https://raw.githubusercontent.com/archvarius/ghs/main/install.sh | zsh
+curl -sL https://raw.githubusercontent.com/ianpsa/zsh-gitauth-manager/main/install.sh | zsh
 ```
 
 ### Instalação Manual
 
 ```bash
-git clone https://github.com/archvarius/ghs.git ~/ghs
+git clone https://github.com/ianpsa/zsh-gitauth-manager.git ~/ghs
 echo 'export PATH="$HOME/ghs:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 ```

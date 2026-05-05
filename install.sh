@@ -29,6 +29,10 @@ else
     git clone "$GH_REPO_URL" "$INSTALL_DIR"
 fi
 
+# Create state files if they don't exist
+[[ ! -f "${HOME}/.ghs_state" ]] && touch "${HOME}/.ghs_state" && echo "Created ~/.ghs_state"
+[[ ! -f "${HOME}/.ghs_email_map" ]] && touch "${HOME}/.ghs_email_map" && echo "Created ~/.ghs_email_map"
+
 # Add to zshrc
 ZSHRC="${HOME}/.zshrc"
 GHS_LINE='export PATH="$HOME/ghs:$PATH"'

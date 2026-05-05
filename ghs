@@ -1,6 +1,6 @@
 #!/bin/zsh
 # ghs - Switch between GitHub and GitLab accounts
-# https://github.com/archvarius/ghs
+# https://github.com/ianpsa/zsh-gitauth-manager
 
 GH_STATE_FILE="${HOME}/.ghs_state"
 GH_EMAIL_MAP_FILE="${HOME}/.ghs_email_map"

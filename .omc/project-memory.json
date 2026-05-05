@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1777983845581,
+  "projectRoot": "/home/archvarius/Área de trabalho/projects/Hobby/ghs",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {},
+  "hotPaths": [
+    {
+      "path": "install.sh",
+      "accessCount": 2,
+      "lastAccessed": 1777984956718,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 2,
+      "lastAccessed": 1777985013466,
+      "type": "file"
+    },
+    {
+      "path": "ghs",
+      "accessCount": 2,
+      "lastAccessed": 1777985025786,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
